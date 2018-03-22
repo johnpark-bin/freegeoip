@@ -5,6 +5,7 @@ describe "FreeGeoIP::Response", :vcr do
     VCR.use_cassette("locate") do
       @host = FreeGeoIP.locate("google-public-dns-a.google.com")
     end
+    
     @google_dns = FreeGeoIP::Response.new(@host)
   end
   context "success" do

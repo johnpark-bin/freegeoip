@@ -1,4 +1,5 @@
 require "vcr"
+require File.expand_path(File.dirname(__FILE__) + '/../lib/freegeoip')
 
 VCR.configure do |c|
   c.cassette_library_dir = 'spec/cassettes'
@@ -6,10 +7,8 @@ VCR.configure do |c|
   c.configure_rspec_metadata!
 end
 
-require File.expand_path(File.dirname(__FILE__) + '/../lib/freegeoip')
-
 RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
   config.mock_framework = :rspec
-  config.treat_symbols_as_metadata_keys_with_true_values = true
+  config.expect_with(:rspec) { |c| c.syntax = :should }
 end
