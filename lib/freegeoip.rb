@@ -2,12 +2,24 @@ require "faraday"
 require "multi_json"
 
 module FreeGeoIP  
-  CONNECTION = Faraday.new(:url => "http://freegeoip.net/json/") do |builder|
-    builder.adapter Faraday.default_adapter
+  @@freegeoip_url = 'http://freegeoip.net/json'
+
+  def self.url
+    @@freegeoip_url
   end
-  
+
+  def self.url=(url)
+    @@freegeoip_url = url
+  end 
+
+  def self.connection
+    Faraday.new(:url => url) do |builder|
+      builder.adapter Faraday.default_adapter
+    end
+  end
+
   def self.locate(address)
-    if (response = CONNECTION.get(address)).success?
+    if (response = connection.get(address)).success?
       MultiJson.decode(response.body)
     else
       false
