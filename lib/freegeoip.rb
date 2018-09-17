@@ -1,8 +1,12 @@
 require "faraday"
 require "multi_json"
 
-module FreeGeoIP  
+module FreeGeoIP 
+  attr_accessor :timeout, :open_timeout
+
   @@freegeoip_url = 'http://freegeoip.net/json'
+  @@timeout = 5
+  @@open_timeout = 2
 
   def self.url
     @@freegeoip_url
@@ -19,7 +23,7 @@ module FreeGeoIP
   end
 
   def self.locate(address)
-    if (response = connection.get(address)).success?
+    if (response = connection.get(address, timeout: @@timeout, open_timeout: @@open_timeout)).success?
       MultiJson.decode(response.body)
     else
       false
