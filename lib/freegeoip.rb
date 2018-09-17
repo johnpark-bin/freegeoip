@@ -10,13 +10,13 @@ module FreeGeoIP
     attr_accessor :url, :timeout, :open_timeout
 
     def connection
-      Faraday.new(:url => url) do |builder|
+      Faraday.new(:url => url, request: { timeout: self.timeout, open_timeout: self.open_timeout}) do |builder|
         builder.adapter Faraday.default_adapter
       end
     end
 
     def locate(address)
-      if (response = connection.get(address, options: {timeout: self.timeout, open_timeout: self.open_timeout})).success?
+      if (response = connection.get(address)).success?
         MultiJson.decode(response.body)
       else
         false
