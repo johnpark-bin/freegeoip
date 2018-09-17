@@ -1,30 +1,29 @@
 require "faraday"
 require "multi_json"
 
-module FreeGeoIP  
-  @@freegeoip_url = 'http://freegeoip.net/json'
+module FreeGeoIP 
+  @url = 'http://freegeoip.net/json'
+  @timeout = 5
+  @open_timeout = 2
 
-  def self.url
-    @@freegeoip_url
-  end
+  class << self
+    attr_accessor :url, :timeout, :open_timeout
 
-  def self.url=(url)
-    @@freegeoip_url = url
-  end 
+    def connection
+      Faraday.new(:url => url, request: { timeout: self.timeout, open_timeout: self.open_timeout}) do |builder|
+        builder.adapter Faraday.default_adapter
+      end
+    end
 
-  def self.connection
-    Faraday.new(:url => url) do |builder|
-      builder.adapter Faraday.default_adapter
+    def locate(address)
+      if (response = connection.get(address)).success?
+        MultiJson.decode(response.body)
+      else
+        false
+      end
     end
   end
 
-  def self.locate(address)
-    if (response = connection.get(address)).success?
-      MultiJson.decode(response.body)
-    else
-      false
-    end
-  end
 end
 
 require "freegeoip/version"
